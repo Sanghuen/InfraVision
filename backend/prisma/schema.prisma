@@ -14,23 +14,25 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  password  String
-  servers   Server[]
+  password     String
+  tokenVersion Int      @default(0)
+  servers      Server[]
 }
 
 model Server {
-  id        Int      @id @default(autoincrement())
-  name      String
-  hostname  String
-  platform  String?
-  status    String   @default("online")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ownerId   Int
-  agentId   String   @unique
-  metrics   Metric[]
-  logs      Log[]
-  owner     User     @relation(fields: [ownerId], references: [id])
+  id           Int      @id @default(autoincrement())
+  name         String
+  hostname     String
+  platform     String?
+  status       String   @default("online")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  ownerId      Int
+  agentId      String   @unique
+  agentKeyHash String?  @unique
+  metrics      Metric[]
+  logs         Log[]
+  owner        User     @relation(fields: [ownerId], references: [id])
 }
 
 model Metric {
@@ -39,7 +41,7 @@ model Metric {
   cpu         Json
   memory      Json
   disk        Json
-  network     Json  @default("{}")
+  network     Json     @default("{}")
   processes   Json
   docker      Json
   collectedAt DateTime @default(now())

@@ -1,12 +1,16 @@
+import os
 
 import psutil
 
 
 def get_disk_info():
-    # Keep the original C: drive summary
-    disk = psutil.disk_usage("C:\\")
+    preferred_root = "C:\\" if os.name == "nt" else os.path.abspath(os.sep)
 
-    # Collect information from all available partitions
+    try:
+        root_usage = psutil.disk_usage(preferred_root)
+    except (PermissionError, OSError):
+        root_usage = None
+
     partitions = []
 
     for partition in psutil.disk_partitions(all=False):
@@ -23,16 +27,19 @@ def get_disk_info():
                 "usage": usage.percent,
             })
 
+            if root_usage is None:
+                root_usage = usage
+
         except (PermissionError, OSError):
-            # Skip drives that cannot be accessed
             continue
 
-    return {
-        # Original fields for Dashboard compatibility
-        "total": disk.total,
-        "used": disk.used,
-        "usage": disk.percent,
+    if root_usage is None:
+        root_usage = psutil.disk_usage(preferred_root)
 
-        # New detailed partition information
+    return {
+        # Keep the summary fields consumed by the Dashboard.
+        "total": root_usage.total,
+        "used": root_usage.used,
+        "usage": root_usage.percent,
         "partitions": partitions,
     }

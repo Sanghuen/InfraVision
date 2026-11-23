@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config'; // 1. นำเข้า ConfigMo
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ServerModule } from './server/server.module';
 
@@ -12,7 +11,6 @@ import { ServerModule } from './server/server.module';
     ConfigModule.forRoot({ isGlobal: true }), // 2. ใส่บรรทัดนี้ไว้บนสุดของ imports
     PrismaModule,
     ServerModule,
-    UsersModule,
     AuthModule,
   ],
   controllers: [AppController],

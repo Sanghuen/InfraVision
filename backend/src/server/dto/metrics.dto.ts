@@ -34,7 +34,7 @@ export class MetricsDto {
   @IsArray()
   docker?: any[];
 
-    @IsOptional()
+  @IsOptional()
   @IsArray()
   logs?: {
     recordId: number;

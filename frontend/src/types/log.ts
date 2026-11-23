@@ -1,9 +1,8 @@
+export type LogLevel = "info" | "information" | "warning" | "error" | "critical";
 
-export type LogLevel = 'info' | 'warning' | 'error' | 'critical';
+export type LogChannel = string;
 
-export type LogChannel = 'Application' | 'System';
-
-export interface WindowsLog {
+export interface ServerLog {
   id: number;
   agentId: string;
   recordId: number;

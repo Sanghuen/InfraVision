@@ -14,21 +14,36 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  const password = await bcrypt.hash('admin123', 10);
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const plainPassword = process.env.ADMIN_PASSWORD;
+
+  if (!email || !plainPassword) {
+    throw new Error(
+      'ADMIN_EMAIL and ADMIN_PASSWORD must be configured before running the seed.',
+    );
+  }
+
+  if (plainPassword.length < 12) {
+    throw new Error('ADMIN_PASSWORD must contain at least 12 characters.');
+  }
+
+  if (Buffer.byteLength(plainPassword, 'utf8') > 72) {
+    throw new Error('ADMIN_PASSWORD must not exceed 72 UTF-8 bytes.');
+  }
+
+  const password = await bcrypt.hash(plainPassword, 12);
 
   const user = await prisma.user.upsert({
-    where: {
-      email: 'admin@infravision.local',
-    },
+    where: { email },
     update: {},
     create: {
-      email: 'admin@infravision.local',
+      email,
       name: 'Admin',
       password,
     },
   });
 
-  console.log('Admin user created:', user.email);
+  console.log('Admin user is ready:', user.email);
 }
 
 main()

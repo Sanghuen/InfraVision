@@ -21,6 +21,7 @@ interface Server {
   disk: number;
   processCount: number;
   dockerContainerCount: number;
+  collectedAt: string | null;
 }
 
 interface ServerCardProps {
@@ -55,7 +56,12 @@ export function ServerCard({ server }: ServerCardProps) {
   const memoryStatus = getUsageStatus(server.memory);
   const diskStatus = getUsageStatus(server.disk);
 
-  const isOnline = server.status.toLowerCase() === 'online';
+  const normalizedStatus = server.status.toLowerCase();
+  const isOnline = normalizedStatus === 'online';
+  const isStale = normalizedStatus === 'stale';
+  const lastReported = server.collectedAt
+    ? new Date(server.collectedAt).toLocaleString()
+    : 'Never';
 
   return (
     <div className="group rounded-xl border border-slate-800 bg-slate-900 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-700 hover:bg-slate-900/90">
@@ -86,7 +92,9 @@ export function ServerCard({ server }: ServerCardProps) {
           className={`flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-medium ${
             isOnline
               ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400'
-              : 'border-red-500/20 bg-red-500/10 text-red-400'
+              : isStale
+                ? 'border-amber-500/20 bg-amber-500/10 text-amber-400'
+                : 'border-red-500/20 bg-red-500/10 text-red-400'
           }`}
         >
           {isOnline ? (
@@ -95,10 +103,10 @@ export function ServerCard({ server }: ServerCardProps) {
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
           ) : (
-            <span className="h-2 w-2 rounded-full bg-red-400" />
+            <span className={'h-2 w-2 rounded-full ' + (isStale ? 'bg-amber-400' : 'bg-red-400')} />
           )}
 
-          {server.status}
+          {isStale ? 'Stale' : server.status}
         </span>
 
       </div>
@@ -116,6 +124,9 @@ export function ServerCard({ server }: ServerCardProps) {
         </span>
       </div>
 
+      <p className="mt-2 text-xs text-slate-500">
+        Last report: {lastReported}
+      </p>
       {/* Resource Metrics */}
       <div className="mt-5 grid grid-cols-2 gap-3">
 

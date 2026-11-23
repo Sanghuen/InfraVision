@@ -5,7 +5,7 @@ from disk_reader import get_disk_info
 from process_reader import get_processes
 from docker_reader import get_docker_containers
 from network_reader import get_network_info
-from logs_reader import get_windows_logs
+from logs_reader import get_system_logs
 from sender import send_metrics
 
 import platform
@@ -34,7 +34,7 @@ def collect_system_info():
         "network": get_network_info(),
         "processes": get_processes(),
         "docker": get_docker_containers(),
-        "logs": get_windows_logs(),
+        "logs": get_system_logs(),
     }
 
 
